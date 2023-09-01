@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from dogsvscats.classifier import DogCatClassifier
-from dogsvscats.preprocessing import train_loader, val_loader
+from classifier import DogCatClassifier
+from preprocessing import train_loader, val_loader
 
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
