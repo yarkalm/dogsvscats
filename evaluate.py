@@ -25,7 +25,7 @@ class DogsVSCatsInferenceDataset(Dataset):
 
 
 # вывод изображений
-def display_image_grid(images_filepaths, predicted_labels, cols=4):
+def display_image_grid(images_filepaths, predicted_labels=(), cols=5):
     rows = len(images_filepaths) // cols
     figure, ax = plt.subplots(nrows=rows, ncols=cols, figsize=(12, 6))
     for i, image_filepath in enumerate(images_filepaths):

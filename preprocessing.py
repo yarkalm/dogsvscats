@@ -2,10 +2,10 @@ import copy
 import random
 import albumentations as A
 from matplotlib import pyplot as plt
-from dataset import DogsVSCatsDataset
+from dataset import DogsVSCatsDataset, DogsVSCatsInferenceDataset
 from torch.utils.data import DataLoader
 from albumentations.pytorch import ToTensorV2
-from evaluate import DogsVSCatsInferenceDataset
+
 
 
 def visualize_augmentations(dataset, idx=0, samples=8, cols=4):
@@ -25,9 +25,10 @@ def visualize_augmentations(dataset, idx=0, samples=8, cols=4):
 def create_loader(correct_images_filepaths):
     random.shuffle(correct_images_filepaths)
 
-    train_images_filepaths = correct_images_filepaths[:20000]
-    val_images_filepaths = correct_images_filepaths[20000:-10]
+    train_images_filepaths = correct_images_filepaths[:4000]
+    val_images_filepaths = correct_images_filepaths[4000:-10]
     test_images_filepaths = correct_images_filepaths[-10:]
+    y_true_images_filepaths = correct_images_filepaths[:1000]
 
     train_dataset = DogsVSCatsDataset(images_filepaths=train_images_filepaths, transform=base_augmentations)
     train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4, pin_memory=True)
@@ -35,10 +36,14 @@ def create_loader(correct_images_filepaths):
     val_dataset = DogsVSCatsDataset(images_filepaths=val_images_filepaths, transform=base_augmentations)
     val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
 
-    visualize_augmentations(train_dataset)
+    #visualize_augmentations(train_dataset)
     test_dataset = DogsVSCatsInferenceDataset(images_filepaths=test_images_filepaths, transform=test_transform)
     test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
-    return train_loader, val_loader, test_loader
+
+    y_true_dataset = DogsVSCatsInferenceDataset(images_filepaths=y_true_images_filepaths, transform=test_transform)
+    y_true_loader = DataLoader(y_true_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
+
+    return train_loader, train_dataset, val_loader, val_dataset, test_loader, test_dataset, y_true_dataset, y_true_loader
 
 
 base_augmentations = A.Compose(
