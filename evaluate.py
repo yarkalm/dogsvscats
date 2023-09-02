@@ -3,8 +3,7 @@ import cv2
 import torch
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, precision_score, recall_score, f1_score
 
 
 
@@ -48,10 +47,15 @@ def conf_matrix(model, params, loader):
             labels = labels.to(params["device"], non_blocking=True)
             output = model(images)
 
-            y_pred.extend(torch.sigmoid(output) >= 0.5)[:, 0].cpu().numpy()
+            y_pred.extend((torch.sigmoid(output) >= 0.5)[:, 0].cpu().numpy())
             y_true.extend(labels.cpu().numpy())
     
-    print(confusion_matrix(y_true, y_pred))
+    cm = (confusion_matrix(y_true, y_pred, labels=['Dogs','Cats']))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+                             display_labels=['Dogs','Cats'])
+    disp.plot()
+
+    plt.show()
     print("Precision of the Model :\t" + str(precision_score(y_true, y_pred)))
     print("Recall of the Model    :\t" + str(recall_score(y_true, y_pred)))
     print("F1 Score of the Model  :\t" + str(f1_score(y_true, y_pred)))

@@ -28,7 +28,7 @@ def create_loader(correct_images_filepaths):
     train_images_filepaths = correct_images_filepaths[:4000]
     val_images_filepaths = correct_images_filepaths[4000:-10]
     test_images_filepaths = correct_images_filepaths[-10:]
-    y_true_images_filepaths = correct_images_filepaths[:1000]
+    y_true_images_filepaths = correct_images_filepaths[2000:3000]
 
     train_dataset = DogsVSCatsDataset(images_filepaths=train_images_filepaths, transform=base_augmentations)
     train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4, pin_memory=True)
@@ -40,7 +40,7 @@ def create_loader(correct_images_filepaths):
     test_dataset = DogsVSCatsInferenceDataset(images_filepaths=test_images_filepaths, transform=test_transform)
     test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
 
-    y_true_dataset = DogsVSCatsInferenceDataset(images_filepaths=y_true_images_filepaths, transform=test_transform)
+    y_true_dataset = DogsVSCatsDataset(images_filepaths=y_true_images_filepaths, transform=test_transform)
     y_true_loader = DataLoader(y_true_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
 
     return train_loader, train_dataset, val_loader, val_dataset, test_loader, test_dataset, y_true_dataset, y_true_loader

@@ -6,7 +6,7 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 from preprocessing import create_loader
-from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
+from evaluate import predict, display_image_grid, conf_matrix
 from evaluate import predict, display_image_grid
 from classifier import create_model, train, validate
 
@@ -113,18 +113,4 @@ if __name__ == '__main__':
     print((test_images_filepaths),(predicted_labels))
     display_image_grid(test_images_filepaths, predicted_labels)
 
-    y_pred = predict(model, params, y_true_loader)
-
-    y_true_values = []
-    for batch in train_loader:
-        inputs, labels = batch
-        y_true_values.append(labels)
-
-    print(predicted_labels)
-    conf_matrix = confusion_matrix(y_true_values, predicted_labels)
-    print("Confusion Matrix of the Test Set")
-    print("-----------")
-    print(conf_matrix)
-    print("Precision of the Model :\t" + str(precision_score(y_true_values, predicted_labels)))
-    print("Recall of the Model    :\t" + str(recall_score(y_true_values, predicted_labels)))
-    print("F1 Score of the Model  :\t" + str(f1_score(y_true_values, predicted_labels)))
+    conf_matrix(model, params, train_loader)
