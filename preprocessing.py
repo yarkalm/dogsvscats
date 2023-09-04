@@ -14,7 +14,6 @@ def visualize_augmentations(dataset, idx=0, samples=8, cols=4):
     rows = samples // cols
     figure, ax = plt.subplots(nrows=rows, ncols=cols, figsize=(12, 6))
     for i in range(samples):
-        print(dataset[idx])
         image, _ = dataset[idx]
         ax.ravel()[i].imshow(image)
         ax.ravel()[i].set_axis_off()
@@ -34,7 +33,6 @@ def create_loader(correct_images_filepaths):
     val_dataset = DogsVSCatsDataset(images_filepaths=val_images_filepaths, transform=base_augmentations)
     val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
 
-    #visualize_augmentations(train_dataset)
     test_dataset = DogsVSCatsDataset(images_filepaths=test_images_filepaths, test_flag=True, transform=test_transform)
     test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
 

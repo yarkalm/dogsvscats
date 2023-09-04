@@ -6,3 +6,6 @@ torcheval
 matplotlib
 tqdm
 sklearn
+pathlib
+albumentations
+itertools
