@@ -16,7 +16,7 @@ class DogsVSCatsDataset(Dataset):
         image_filepath = self.images_filepaths[idx]
         image = cv2.imread(image_filepath)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        if os.path.normpath(image_filepath).split(os.sep)[-2] == "Cat":
+        if os.path.normpath(image_filepath).split(os.sep)[-2] == "cat":
             label = 1.0
         else:
             label = 0.0
