@@ -4,9 +4,35 @@ import torch
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, precision_score, recall_score, f1_score
+import numpy as np
+import itertools
 
 
+def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    (This function is copied from the scikit docs.)
+    """
+    plt.figure()
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
 
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    print(cm)
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, cm[i, j], horizontalalignment="center", 
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
 
 # вывод изображений
 def display_image_grid(images_filepaths, predicted_labels=(), cols=5):
@@ -33,7 +59,7 @@ def predict(model, params, test_loader):
             images = images.to(params["device"], non_blocking=True)
             output = model(images)
             predictions = (torch.sigmoid(output) >= 0.5)[:, 0].cpu().numpy()
-            predicted_labels += ["Cat" if is_cat else "Dog" for is_cat in predictions]
+            predicted_labels += ["cat" if is_cat else "dog" for is_cat in predictions]
 
     return predicted_labels
 
@@ -50,13 +76,9 @@ def conf_matrix(model, params, loader):
             y_pred.extend((torch.sigmoid(output) >= 0.5)[:, 0].cpu().numpy())
             y_true.extend(labels.cpu().numpy())
     
-    cm = (confusion_matrix(y_true, y_pred, labels=['Dogs','Cats']))
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-                             display_labels=['Dogs','Cats'])
-    disp.plot()
+    cm = (confusion_matrix(y_true, y_pred))
+    plot_confusion_matrix(cm,['cats','dogs'])
 
-    plt.show()
     print("Precision of the Model :\t" + str(precision_score(y_true, y_pred)))
     print("Recall of the Model    :\t" + str(recall_score(y_true, y_pred)))
     print("F1 Score of the Model  :\t" + str(f1_score(y_true, y_pred)))
-

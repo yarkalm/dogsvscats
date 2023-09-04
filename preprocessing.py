@@ -8,7 +8,6 @@ from torch.utils.data import DataLoader
 from albumentations.pytorch import ToTensorV2
 
 
-
 def visualize_augmentations(dataset, idx=0, samples=8, cols=4):
     dataset = copy.deepcopy(dataset)
     dataset.transform = A.Compose([t for t in dataset.transform if not isinstance(t, (A.Normalize, ToTensorV2))])
@@ -29,18 +28,16 @@ def create_loader(correct_images_filepaths):
     train_images_filepaths, val_images_filepaths = train_test_split(correct_images_filepaths, train_size=0.6)
     val_images_filepaths, test_images_filepaths = train_test_split(val_images_filepaths,test_size=0.1)
 
-    train_dataset = DogsVSCatsDataset(images_filepaths=train_images_filepaths, transform=base_augmentations)
+    train_dataset = DogsVSCatsDataset(images_filepaths=train_images_filepaths, test_flag=False ,transform=base_augmentations)
     train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4, pin_memory=True)
 
     val_dataset = DogsVSCatsDataset(images_filepaths=val_images_filepaths, transform=base_augmentations)
     val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
 
     #visualize_augmentations(train_dataset)
-    test_dataset = DogsVSCatsDataset(images_filepaths=test_images_filepaths, transform=None)
+    test_dataset = DogsVSCatsDataset(images_filepaths=test_images_filepaths, test_flag=True, transform=test_transform)
     test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
 
-    #y_true_dataset = DogsVSCatsDataset(images_filepaths=y_true_images_filepaths, transform=test_transform)
-    #y_true_loader = DataLoader(y_true_dataset, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
 
     return train_loader, train_dataset, val_loader, val_dataset, test_loader, test_dataset
 
