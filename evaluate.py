@@ -1,19 +1,23 @@
 import os
 import cv2
 import torch
-import matplotlib.pyplot as plt
-from torch.utils.data import Dataset
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, precision_score, recall_score, f1_score
-import numpy as np
 import itertools
+import numpy as np
+import matplotlib.pyplot as plt
+from torcheval.metrics.functional import multiclass_f1_score
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
+
+
+
+# Функция расчёта точности
+def cal_acc(output, target, sigma):
+    output = torch.sigmoid(output) >= sigma
+    target = target == 1.0
+    return multiclass_f1_score(torch.squeeze(output, dim=1), torch.squeeze(target, dim=1), num_classes=2).item()
+
 
 
 def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    (This function is copied from the scikit docs.)
-    """
     plt.figure()
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)

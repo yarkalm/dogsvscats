@@ -1,43 +1,10 @@
 import torch
-from tqdm import tqdm
 import torch.nn as nn
-from collections import defaultdict
+from tqdm import tqdm
 import torchvision.models as models
-from torcheval.metrics.functional import multiclass_f1_score
+from evaluate import cal_acc
+from metrics import MetricMonitor
 
-
-
-
-class MetricMonitor:
-    def __init__(self, float_precision=3):
-        self.float_precision = float_precision
-        self.reset()
-
-    def reset(self):
-        self.metrics = defaultdict(lambda: {"val": 0, "count": 0, "avg": 0})
-
-    def update(self, metric_name, val):
-        metric = self.metrics[metric_name]
-
-        metric["val"] += val
-        metric["count"] += 1
-        metric["avg"] = metric["val"] / metric["count"]
-
-    def __str__(self):
-        return " | ".join(
-            [
-                "{metric_name}: {avg:.{float_precision}f}".format(
-                    metric_name=metric_name, avg=metric["avg"], float_precision=self.float_precision
-                )
-                for (metric_name, metric) in self.metrics.items()
-            ]
-        )
-
-# Функция расчёта точности
-def cal_acc(output, target):
-    output = torch.sigmoid(output) >= 0.5
-    target = target == 1.0
-    return multiclass_f1_score(torch.squeeze(output, dim=1), torch.squeeze(target, dim=1), num_classes=2).item()
 
 # Функция создания модели
 def create_model(params, ):
@@ -60,7 +27,7 @@ def train(train_loader, model, criterion, optimizer, epoch, params):
         target = target.to(params["device"], non_blocking=True).float().view(-1, 1)
         output = model(images)
         loss = criterion(output, target)
-        accuracy = cal_acc(output, target)
+        accuracy = cal_acc(output, target, params['sigma'])
         metric_monitor.update("Loss", loss.item())
         metric_monitor.update("Accuracy", accuracy)
         optimizer.zero_grad()
@@ -72,6 +39,7 @@ def train(train_loader, model, criterion, optimizer, epoch, params):
             "Epoch: {epoch}. Train.      {metric_monitor}".format(epoch=epoch, metric_monitor=metric_monitor)
         )
     return [acc_history, loss_history]
+
 
 # Функция запуска валидации
 def validate(val_loader, model, criterion, epoch, params):
@@ -86,7 +54,7 @@ def validate(val_loader, model, criterion, epoch, params):
             target = target.to(params["device"], non_blocking=True).float().view(-1, 1)
             output = model(images)
             loss = criterion(output, target)
-            accuracy = cal_acc(output, target)
+            accuracy = cal_acc(output, target, params['sigma'])
             metric_monitor.update("Loss", loss.item())
             metric_monitor.update("Accuracy", accuracy)
             acc_history.append(accuracy)
