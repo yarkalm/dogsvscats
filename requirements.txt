@@ -1,0 +1,11 @@
+torch-directml
+opencv-python
+torch
+torch-vision
+torcheval
+matplotlib
+tqdm
+sklearn
+pathlib
+albumentations
+itertools
