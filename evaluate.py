@@ -45,7 +45,7 @@ def display_image_grid(images_filepaths, predicted_labels=(), cols=5):
     for i, image_filepath in enumerate(images_filepaths):
         image = cv2.imread(image_filepath)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        true_label = os.path.normpath(image_filepath).split(os.sep)[-2]
+        true_label = os.path.normpath(image_filepath).split(os.sep)[-2][:3]
         predicted_label = predicted_labels[i] if predicted_labels else true_label
         color = "green" if true_label == predicted_label else "red"
         ax.ravel()[i].imshow(image)
