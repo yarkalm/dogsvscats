@@ -1,6 +1,5 @@
 import os
 import cv2
-import random
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from preprocessing import augmentations
@@ -39,8 +38,6 @@ class DogsVSCatsDataset(Dataset):
 
 # Функция для создания датасета
 def create_loader(correct_images_filepaths):
-    random.shuffle(correct_images_filepaths)
-
     train_images_filepaths, val_images_filepaths = train_test_split(correct_images_filepaths, train_size=0.6)
     val_images_filepaths, test_images_filepaths = train_test_split(val_images_filepaths,test_size=0.1)
 
